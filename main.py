@@ -16,7 +16,7 @@ if __name__ == '__main__':
     window = mainWindow.MainWindow()
     window.show()
     
-    capture = ScreenCapture(coords=QRect(0,0,1920, 1080), fps=5)
+    capture = ScreenCapture(coords=QRect(0,0,1500,1000), fps=32)
     
     capture.newScreen.connect(window.originalPictureWidget.updateImage)
     capture.newTransformedScreen.connect(window.transofrmedPictureWidget.updateImage)
