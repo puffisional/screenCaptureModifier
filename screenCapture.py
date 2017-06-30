@@ -13,7 +13,7 @@ class ScreenCapture(QObject):
     currentScreen = None
     modifiedScreen = None
     
-    def __init__(self, coords, fps=5):
+    def __init__(self, coords, fps=1):
         QObject.__init__(self)
         self.fps = fps
         self.coords = coords
@@ -38,7 +38,7 @@ class ScreenCapture(QObject):
         # Tu si urob filter nad polom
         # Usporiadanie je 1D pole s troma hodnotami RGB 8,8,8
         # Teda width x height x 3 [R,G,B,R,G,B,...]
-        numpyArray = numpyArray - 25
+        numpyArray = numpyArray - 50
         
         # koniec filtra
         self.modifiedScreen = QImage(numpyArray.tostring(), newImage.width(), newImage.height(), QImage.Format_RGB888)

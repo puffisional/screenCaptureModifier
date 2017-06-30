@@ -27,6 +27,7 @@ class ImageViewer(QtOpenGL.QGLWidget, QWidget):
                 w, h = imgRect.width() * self.height() / imgRect.height(), self.height()
             else:
                 w, h = self.width(), imgRect.height() * self.width() / imgRect.width()
-                
-            painter.drawImage(QRect(0, 0, w, h), self.currentFrame, self.currentFrame.rect())
+            
+            painter.drawImage(QRect(0, 0, w, h), self.currentFrame, imgRect)
+            painter.drawRect(QRect(1, 1, w-1, h-1))
         return QWidget.paintEvent(self, *args, **kwargs)
