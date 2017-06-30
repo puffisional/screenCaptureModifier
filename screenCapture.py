@@ -5,7 +5,6 @@ from __future__ import print_function
 from PyQt4.QtGui import QApplication
 from PyQt4.Qt import QPixmap, QTimer, QObject, pyqtSignal, QImage
 import numpy as np
-import copy
 
 class ScreenCapture(QObject):
     
@@ -21,7 +20,7 @@ class ScreenCapture(QObject):
         
         self.captureClock = QTimer()
         self.captureClock.timeout.connect(self.captureScreen)
-        self.captureClock.start(1000/self.fps)
+        self.captureClock.start(1000 / self.fps)
     
     def captureScreen(self):
         screenshot = QPixmap.grabWindow(QApplication.desktop().winId())
@@ -39,7 +38,7 @@ class ScreenCapture(QObject):
         # Tu si urob filter nad polom
         # Usporiadanie je 1D pole s troma hodnotami RGB 8,8,8
         # Teda width x height x 3 [R,G,B,R,G,B,...]
-        numpyArray = numpyArray - 15
+        numpyArray = numpyArray - 25
         
         # koniec filtra
         self.modifiedScreen = QImage(numpyArray.tostring(), newImage.width(), newImage.height(), QImage.Format_RGB888)
