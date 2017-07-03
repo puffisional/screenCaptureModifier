@@ -14,6 +14,7 @@ from time import sleep
 import argparse
 import signal
 import numpy as np
+import zlib
 
 class zmqSubscriber(QObject):
     
@@ -52,7 +53,7 @@ class zmqSubscriber(QObject):
             try:
                 topic, value = self.zmqSubSocket.recv_multipart(flags=zmq.NOBLOCK)
                 imageOrigin, width, height = topic.split("_")
-                imageData = np.fromstring(value, dtype=np.ubyte)
+                imageData = np.fromstring(zlib.decompress(value), dtype=np.ubyte)
                 
                 if imageOrigin == b"original": 
                     self.image1 = QImage(imageData.tostring(), int(width), int(height), QImage.Format_RGB888)

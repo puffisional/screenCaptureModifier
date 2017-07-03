@@ -15,6 +15,8 @@ from time import sleep
 import numpy as np
 import signal
 import argparse
+import zlib
+import json
 
 class zmqPublisher():
     
@@ -51,7 +53,7 @@ class zmqPublisher():
                 image = image.convertToFormat(QImage.Format_RGB888)
                 ptr = image.bits()
                 ptr.setsize(image.byteCount())
-                numpyData = np.asarray(ptr, dtype=np.ubyte)
+                numpyData = zlib.compress(np.asarray(ptr, dtype=np.ubyte).tostring())
                 width, height = image.width(), image.height()
                 self.socket.send_multipart(["%s_%i_%i" %  (topic, width, height), numpyData])
             sleep(0.005)
@@ -83,7 +85,7 @@ if __name__ == '__main__':
     
     capture.newScreen.connect(window.originalPictureWidget.updateImage)
     capture.newTransformedScreen.connect(window.transofrmedPictureWidget.updateImage)
-    
+    print(args.zmqHost, args.zmqPort)
     server = zmqPublisher(args.zmqHost, args.zmqPort)
     
     def sendOriginalPicture(image):
