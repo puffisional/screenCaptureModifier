@@ -26,7 +26,6 @@ class zmqSubscriber(QObject):
         QObject.__init__(self)
         self.host = host
         self.port = port
-        self.zmqPendingMessages = []
         self.start()
     
     def start(self):
@@ -65,8 +64,8 @@ class zmqSubscriber(QObject):
                 sleep(0.01)
         
     def close(self, release=False):
-        self.zmqSubSocket.close()
         self.connected = False
+        self.zmqSubSocket.close()
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)

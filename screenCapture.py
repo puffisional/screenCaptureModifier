@@ -5,6 +5,7 @@ from __future__ import print_function
 from PyQt4.QtGui import QApplication
 from PyQt4.Qt import QPixmap, QTimer, QObject, pyqtSignal, QImage
 import numpy as np
+import Queue
 
 class ScreenCapture(QObject):
     
@@ -21,12 +22,13 @@ class ScreenCapture(QObject):
         self.captureClock = QTimer()
         self.captureClock.timeout.connect(self.captureScreen)
         self.captureClock.start(1000 / self.fps)
+        self.frameBuffer = Queue.deque(maxlen=self.fps*8)
     
     def captureScreen(self):
         screenshot = QPixmap.grabWindow(QApplication.desktop().winId())
         self.currentScreen = screenshot.toImage().copy(self.coords)
+        self.frameBuffer.append(self.currentScreen)
         self.newScreen.emit(self.currentScreen)
-
         self.newTransformedScreen.emit(self.imageFilter(self.currentScreen))
     
     def imageFilter(self, image):
@@ -42,4 +44,5 @@ class ScreenCapture(QObject):
         
         # koniec filtra
         self.modifiedScreen = QImage(numpyArray.tostring(), newImage.width(), newImage.height(), QImage.Format_RGB888)
+        self.frameBuffer.append(self.modifiedScreen)
         return self.modifiedScreen

@@ -30,4 +30,5 @@ class ImageViewer(QtOpenGL.QGLWidget, QWidget):
             
             painter.drawImage(QRect(0, 0, w, h), self.currentFrame, imgRect)
             painter.drawRect(QRect(1, 1, w-1, h-1))
+            
         return QWidget.paintEvent(self, *args, **kwargs)

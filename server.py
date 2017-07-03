@@ -17,6 +17,7 @@ import signal
 import argparse
 import zlib
 import json
+import Queue
 
 class zmqPublisher():
     
@@ -25,7 +26,7 @@ class zmqPublisher():
     def __init__(self, host, port):
         self.host = host
         self.port = port
-        self.zmqPendingMessages = []
+        self.zmqPendingMessages = Queue.deque()
         self.start()
     
     def start(self):
@@ -46,22 +47,23 @@ class zmqPublisher():
                 print(e)
         
     def _mainThread(self):
-        while self.connected and len(self.zmqPendingMessages) > 0:
-            
-            topic, image = self.zmqPendingMessages.pop(0)
-            image = image.convertToFormat(QImage.Format_RGB888)
-            ptr = image.bits()
-            ptr.setsize(image.byteCount())
-            numpyData = zlib.compress(np.asarray(ptr, dtype=np.ubyte).tostring(), 7)
-            width, height = image.width(), image.height()
-            self.socket.send_multipart(["%s_%i_%i" %  (topic, width, height), numpyData])
-        sleep(0.005)
+        while self.connected:
+            while len(self.zmqPendingMessages) > 0:
+                topic, image = self.zmqPendingMessages.popleft()
+                image = image.convertToFormat(QImage.Format_RGB888)
+                ptr = image.bits()
+
+                ptr.setsize(image.byteCount())
+                numpyData = zlib.compress(np.asarray(ptr, dtype=np.ubyte).tostring(), 4)
+                width, height = image.width(), image.height()
+                self.socket.send_multipart(["%s_%i_%i" %  (topic, width, height), numpyData])
+            sleep(0.005)
     
     def send(self, topic, image):
         self.zmqPendingMessages.append([topic, image])
         
     def close(self, release=False):
-        self.socket.close()
+        self.zmqPendingMessages.clear()
         self.connected = False
 
 if __name__ == '__main__':
@@ -70,7 +72,7 @@ if __name__ == '__main__':
     p = argparse.ArgumentParser()
     p.add_argument("--zmqHost", default="127.0.0.1")
     p.add_argument("--zmqPort", default=8889)
-    p.add_argument("--coords", default="0,0,800,600")
+    p.add_argument("--coords", default="0,0,1280,720")
     p.add_argument("--fps", default=5)
     args = p.parse_args()
     
@@ -94,6 +96,8 @@ if __name__ == '__main__':
         server.send(b"modified", image)
     
     def onClose():
+        capture.newScreen.disconnect(sendOriginalPicture)
+        capture.newTransformedScreen.disconnect(sendModifiedPicture)
         server.close()
     
     capture.newScreen.connect(sendOriginalPicture)
