@@ -53,7 +53,7 @@ class zmqPublisher():
                 image = image.convertToFormat(QImage.Format_RGB888)
                 ptr = image.bits()
                 ptr.setsize(image.byteCount())
-                numpyData = zlib.compress(np.asarray(ptr, dtype=np.ubyte).tostring())
+                numpyData = zlib.compress(np.asarray(ptr, dtype=np.ubyte).tostring(), 7)
                 width, height = image.width(), image.height()
                 self.socket.send_multipart(["%s_%i_%i" %  (topic, width, height), numpyData])
             sleep(0.005)
