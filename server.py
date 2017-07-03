@@ -46,17 +46,16 @@ class zmqPublisher():
                 print(e)
         
     def _mainThread(self):
-        while self.connected:
-            while len(self.zmqPendingMessages) > 0:
-                
-                topic, image = self.zmqPendingMessages.pop(0)
-                image = image.convertToFormat(QImage.Format_RGB888)
-                ptr = image.bits()
-                ptr.setsize(image.byteCount())
-                numpyData = zlib.compress(np.asarray(ptr, dtype=np.ubyte).tostring(), 7)
-                width, height = image.width(), image.height()
-                self.socket.send_multipart(["%s_%i_%i" %  (topic, width, height), numpyData])
-            sleep(0.005)
+        while self.connected and len(self.zmqPendingMessages) > 0:
+            
+            topic, image = self.zmqPendingMessages.pop(0)
+            image = image.convertToFormat(QImage.Format_RGB888)
+            ptr = image.bits()
+            ptr.setsize(image.byteCount())
+            numpyData = zlib.compress(np.asarray(ptr, dtype=np.ubyte).tostring(), 7)
+            width, height = image.width(), image.height()
+            self.socket.send_multipart(["%s_%i_%i" %  (topic, width, height), numpyData])
+        sleep(0.005)
     
     def send(self, topic, image):
         self.zmqPendingMessages.append([topic, image])
@@ -85,7 +84,7 @@ if __name__ == '__main__':
     
     capture.newScreen.connect(window.originalPictureWidget.updateImage)
     capture.newTransformedScreen.connect(window.transofrmedPictureWidget.updateImage)
-    print(args.zmqHost, args.zmqPort)
+
     server = zmqPublisher(args.zmqHost, args.zmqPort)
     
     def sendOriginalPicture(image):
