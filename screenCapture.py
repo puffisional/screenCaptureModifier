@@ -21,8 +21,8 @@ class ScreenCapture(QObject):
         self.captureClock.timeout.connect(self.captureScreen)
         self.captureClock.start(1000 / self.fps)
         
-        self.screenBuffer = Queue.deque(maxlen=self.fps)
-        self.transformedScreenBuffer = Queue.deque(maxlen=self.fps)
+        self.screenBuffer = Queue.deque(maxlen=self.fps*2)
+        self.transformedScreenBuffer = Queue.deque(maxlen=self.fps*2)
     
     def captureScreen(self):
         screenshot = QPixmap.grabWindow(QApplication.desktop().winId())

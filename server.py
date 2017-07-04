@@ -54,7 +54,7 @@ class zmqPublisher():
                 ptr = image.bits()
 
                 ptr.setsize(image.byteCount())
-                numpyData = zlib.compress(np.asarray(ptr, dtype=np.ubyte).tostring(), 7)
+                numpyData = zlib.compress(np.asarray(ptr, dtype=np.ubyte).tostring(), 4)
                 width, height = image.width(), image.height()
                 self.socket.send_multipart(["%s_%i_%i" %  (topic, width, height), numpyData])
             sleep(0.005)
@@ -72,7 +72,7 @@ if __name__ == '__main__':
     p = argparse.ArgumentParser()
     p.add_argument("--zmqHost", default="127.0.0.1")
     p.add_argument("--zmqPort", default=8889)
-    p.add_argument("--coords", default="0,0,1280,720")
+    p.add_argument("--coords", default="0,0,1920,1080")
     p.add_argument("--fps", default=5)
     args = p.parse_args()
     
@@ -87,10 +87,10 @@ if __name__ == '__main__':
     server = zmqPublisher(args.zmqHost, args.zmqPort)
     
     def sendOriginalPicture(frameBuffer):
-        server.send(b"original", frameBuffer[-1])
+        server.send(b"original", frameBuffer[-1].copy())
         
     def sendModifiedPicture(frameBuffer):
-        server.send(b"modified", frameBuffer[-1])
+        server.send(b"modified", frameBuffer[-1].copy())
     
     def onClose():
         capture.newScreen.disconnect(sendOriginalPicture)
