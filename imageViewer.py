@@ -3,7 +3,7 @@
 # Global imports
 from __future__ import print_function, division
 from PyQt4 import QtOpenGL
-from PyQt4.Qt import QWidget, QPainter, pyqtSlot, QPixmap, QRect
+from PyQt4.Qt import QWidget, QPainter, pyqtSlot, QPixmap, QRect, QImage
 
 class ImageViewer(QtOpenGL.QGLWidget, QWidget):
     
@@ -12,8 +12,11 @@ class ImageViewer(QtOpenGL.QGLWidget, QWidget):
         self.currentFrame = None
     
     @pyqtSlot(QPixmap)
-    def updateImage(self, imagePixmap):
-        self.currentFrame = imagePixmap
+    def updateImage(self, frameBuffer):
+        if isinstance(frameBuffer, QImage):
+            self.currentFrame = frameBuffer
+        else:
+            self.currentFrame = frameBuffer.popleft()
         self.update()
         
     def paintEvent(self, *args, **kwargs):

@@ -9,10 +9,8 @@ import Queue
 
 class ScreenCapture(QObject):
     
-    newScreen = pyqtSignal("QImage")
-    newTransformedScreen = pyqtSignal("QImage")
-    currentScreen = None
-    modifiedScreen = None
+    newScreen = pyqtSignal("PyQt_PyObject")
+    newTransformedScreen = pyqtSignal("PyQt_PyObject")
     
     def __init__(self, coords, fps=1):
         QObject.__init__(self)
@@ -22,14 +20,17 @@ class ScreenCapture(QObject):
         self.captureClock = QTimer()
         self.captureClock.timeout.connect(self.captureScreen)
         self.captureClock.start(1000 / self.fps)
-        self.frameBuffer = Queue.deque(maxlen=self.fps*8)
+        
+        self.screenBuffer = Queue.deque(maxlen=self.fps)
+        self.transformedScreenBuffer = Queue.deque(maxlen=self.fps)
     
     def captureScreen(self):
         screenshot = QPixmap.grabWindow(QApplication.desktop().winId())
-        self.currentScreen = screenshot.toImage().copy(self.coords)
-        self.frameBuffer.append(self.currentScreen)
-        self.newScreen.emit(self.currentScreen)
-        self.newTransformedScreen.emit(self.imageFilter(self.currentScreen))
+        self.screenBuffer.append(screenshot.toImage().copy(self.coords))
+        self.transformedScreenBuffer.append(self.imageFilter(self.screenBuffer[-1]))
+        
+        self.newScreen.emit(self.screenBuffer)
+        self.newTransformedScreen.emit(self.transformedScreenBuffer)
     
     def imageFilter(self, image):
         newImage = image.convertToFormat(QImage.Format_RGB888)
@@ -44,5 +45,4 @@ class ScreenCapture(QObject):
         
         # koniec filtra
         self.modifiedScreen = QImage(numpyArray.tostring(), newImage.width(), newImage.height(), QImage.Format_RGB888)
-        self.frameBuffer.append(self.modifiedScreen)
         return self.modifiedScreen

@@ -54,7 +54,7 @@ class zmqPublisher():
                 ptr = image.bits()
 
                 ptr.setsize(image.byteCount())
-                numpyData = zlib.compress(np.asarray(ptr, dtype=np.ubyte).tostring(), 4)
+                numpyData = zlib.compress(np.asarray(ptr, dtype=np.ubyte).tostring(), 7)
                 width, height = image.width(), image.height()
                 self.socket.send_multipart(["%s_%i_%i" %  (topic, width, height), numpyData])
             sleep(0.005)
@@ -84,16 +84,13 @@ if __name__ == '__main__':
     x,y,width,height = args.coords.split(",")
     capture = ScreenCapture(coords=QRect(int(x), int(y), int(width), int(height)), fps=int(args.fps))
     
-    capture.newScreen.connect(window.originalPictureWidget.updateImage)
-    capture.newTransformedScreen.connect(window.transofrmedPictureWidget.updateImage)
-
     server = zmqPublisher(args.zmqHost, args.zmqPort)
     
-    def sendOriginalPicture(image):
-        server.send(b"original", image)
+    def sendOriginalPicture(frameBuffer):
+        server.send(b"original", frameBuffer[-1])
         
-    def sendModifiedPicture(image):
-        server.send(b"modified", image)
+    def sendModifiedPicture(frameBuffer):
+        server.send(b"modified", frameBuffer[-1])
     
     def onClose():
         capture.newScreen.disconnect(sendOriginalPicture)
@@ -102,6 +99,9 @@ if __name__ == '__main__':
     
     capture.newScreen.connect(sendOriginalPicture)
     capture.newTransformedScreen.connect(sendModifiedPicture)
+    
+    capture.newScreen.connect(window.originalPictureWidget.updateImage)
+    capture.newTransformedScreen.connect(window.transofrmedPictureWidget.updateImage)
     
     window.onCloseAccept = onClose
     
