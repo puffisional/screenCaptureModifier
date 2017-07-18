@@ -48,7 +48,7 @@ class zmqPublisher():
     def _mainThread(self):
         while self.connected:
             while len(self.zmqPendingMessages) > 0:
-                topic, image = self.zmqPendingMessages.pop(0)
+                topic, image = self.zmqPendingMessages.popleft()
                 image = image.convertToFormat(QImage.Format_RGB888)
                 ptr = image.bits()
 
