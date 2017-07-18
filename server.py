@@ -16,7 +16,6 @@ import numpy as np
 import signal
 import argparse
 import zlib
-import json
 import Queue
 
 class zmqPublisher():
@@ -49,7 +48,7 @@ class zmqPublisher():
     def _mainThread(self):
         while self.connected:
             while len(self.zmqPendingMessages) > 0:
-                topic, image = self.zmqPendingMessages.popleft()
+                topic, image = self.zmqPendingMessages.pop(0)
                 image = image.convertToFormat(QImage.Format_RGB888)
                 ptr = image.bits()
 
@@ -72,7 +71,7 @@ if __name__ == '__main__':
     p = argparse.ArgumentParser()
     p.add_argument("--zmqHost", default="127.0.0.1")
     p.add_argument("--zmqPort", default=8889)
-    p.add_argument("--coords", default="0,0,1920,1080")
+    p.add_argument("--coords", default="0,0,800,600")
     p.add_argument("--fps", default=5)
     args = p.parse_args()
     

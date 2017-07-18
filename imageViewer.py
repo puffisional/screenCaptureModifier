@@ -16,7 +16,7 @@ class ImageViewer(QtOpenGL.QGLWidget, QWidget):
         if isinstance(frameBuffer, QImage):
             self.currentFrame = frameBuffer
         else:
-            self.currentFrame = frameBuffer.popleft()
+            self.currentFrame = frameBuffer.pop(0)
         self.update()
         
     def paintEvent(self, *args, **kwargs):
