@@ -15,6 +15,7 @@ import argparse
 import signal
 import numpy as np
 import zlib
+from modifiedImage import ModifiedImage
 
 class zmqSubscriber(QObject):
     
@@ -22,10 +23,11 @@ class zmqSubscriber(QObject):
     newScreen = pyqtSignal("QImage")
     newTransformedScreen = pyqtSignal("QImage")
     
-    def __init__(self, host, port):
+    def __init__(self, host, port, acceptModified):
         QObject.__init__(self)
         self.host = host
         self.port = port
+        self.acceptModified = acceptModified
         self.start()
     
     def start(self):
@@ -57,7 +59,12 @@ class zmqSubscriber(QObject):
                 if imageOrigin == b"original": 
                     self.image1 = QImage(imageData.tostring(), int(width), int(height), QImage.Format_RGB888)
                     self.newScreen.emit(self.image1)
-                elif imageOrigin == b"modified": 
+                    
+                    if not self.acceptModified:
+                        self.mmp = ModifiedImage(self.image1).get()
+                        self.newTransformedScreen.emit(self.mmp)
+                    
+                elif self.acceptModified and imageOrigin == b"modified": 
                     self.image2 = QImage(imageData.tostring(), int(width), int(height), QImage.Format_RGB888)
                     self.newTransformedScreen.emit(self.image2)
             except zmq.Again:  # No data
@@ -73,13 +80,14 @@ if __name__ == '__main__':
     p = argparse.ArgumentParser()
     p.add_argument("--zmqHost", default="127.0.0.1")
     p.add_argument("--zmqPort", default=8889)
+    p.add_argument("--acceptModified", default=False)
     args = p.parse_args()
     
     window = mainWindow.MainWindow()
     window.setWindowTitle("Client version of viewer")
     window.show()
     
-    subscriber = zmqSubscriber(args.zmqHost, args.zmqPort)
+    subscriber = zmqSubscriber(args.zmqHost, args.zmqPort, args.acceptModified)
     
     subscriber.newScreen.connect(window.originalPictureWidget.updateImage)
     subscriber.newTransformedScreen.connect(window.transofrmedPictureWidget.updateImage)

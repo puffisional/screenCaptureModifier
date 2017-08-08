@@ -6,6 +6,7 @@ from PyQt4.QtGui import QApplication
 from PyQt4.Qt import QPixmap, QTimer, QObject, pyqtSignal, QImage
 import numpy as np
 import Queue
+from modifiedImage import ModifiedImage
 
 class ScreenCapture(QObject):
     
@@ -27,22 +28,7 @@ class ScreenCapture(QObject):
     def captureScreen(self):
         screenshot = QPixmap.grabWindow(QApplication.desktop().winId(), self.coords.x(), self.coords.y(), self.coords.width(), self.coords.height())
         self.screenBuffer.append(screenshot.toImage().copy())
-        self.transformedScreenBuffer.append(self.imageFilter(self.screenBuffer[-1]))
+        self.transformedScreenBuffer.append(ModifiedImage(self.screenBuffer[-1]).get())
         
         self.newScreen.emit(self.screenBuffer)
         self.newTransformedScreen.emit(self.transformedScreenBuffer)
-    
-    def imageFilter(self, image):
-        newImage = image.convertToFormat(QImage.Format_RGB888)
-        ptr = newImage.bits()
-        ptr.setsize(newImage.byteCount())
-        numpyArray = np.asarray(ptr, dtype=np.ubyte)
-        
-        # Tu si urob filter nad polom
-        # Usporiadanie je 1D pole s troma hodnotami RGB 8,8,8
-        # Teda width x height x 3 [R,G,B,R,G,B,...]
-        numpyArray = numpyArray - 50
-        
-        # koniec filtra
-        self.modifiedScreen = QImage(numpyArray.tostring(), newImage.width(), newImage.height(), QImage.Format_RGB888)
-        return self.modifiedScreen
