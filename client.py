@@ -27,7 +27,7 @@ class zmqSubscriber(QObject):
         QObject.__init__(self)
         self.host = host
         self.port = port
-        self.acceptModified = acceptModified
+        self.acceptModified = bool(int(acceptModified))
         self.start()
     
     def start(self):
@@ -42,7 +42,8 @@ class zmqSubscriber(QObject):
                 self.zmqSubSocket = context.socket(zmq.SUB)
                 self.zmqSubSocket.connect("tcp://%s:%i" % (self.host, self.port))
                 self.zmqSubSocket.setsockopt(zmq.SUBSCRIBE, b"original")
-                self.zmqSubSocket.setsockopt(zmq.SUBSCRIBE, b"modified")
+                if self.acceptModified:
+                    self.zmqSubSocket.setsockopt(zmq.SUBSCRIBE, b"modified")
                 self.zmqSubSocket.setsockopt(zmq.LINGER, 0)
                 self.connected = True
                 Thread(target=self._mainThread).start()
@@ -80,7 +81,7 @@ if __name__ == '__main__':
     p = argparse.ArgumentParser()
     p.add_argument("--zmqHost", default="127.0.0.1")
     p.add_argument("--zmqPort", default=8889)
-    p.add_argument("--acceptModified", default=False)
+    p.add_argument("--acceptModified", default=0)
     args = p.parse_args()
     
     window = mainWindow.MainWindow()

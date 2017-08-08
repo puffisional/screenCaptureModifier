@@ -99,7 +99,7 @@ if __name__ == '__main__':
     
     capture.newScreen.connect(sendOriginalPicture)
     
-    if args.sendModified:
+    if bool(int(args.sendModified)):
         capture.newTransformedScreen.connect(sendModifiedPicture)
     
     capture.newScreen.connect(window.originalPictureWidget.updateImage)
