@@ -25,8 +25,8 @@ class ScreenCapture(QObject):
         self.transformedScreenBuffer = Queue.deque(maxlen=self.fps*2)
     
     def captureScreen(self):
-        screenshot = QPixmap.grabWindow(QApplication.desktop().winId())
-        self.screenBuffer.append(screenshot.toImage().copy(self.coords))
+        screenshot = QPixmap.grabWindow(QApplication.desktop().winId(), self.coords.x(), self.coords.y(), self.coords.width(), self.coords.height())
+        self.screenBuffer.append(screenshot.toImage().copy())
         self.transformedScreenBuffer.append(self.imageFilter(self.screenBuffer[-1]))
         
         self.newScreen.emit(self.screenBuffer)
