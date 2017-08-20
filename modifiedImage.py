@@ -13,18 +13,18 @@ class ModifiedImage():
         self.applyFilter()
     
     def applyFilter(self):
-        newImage = self.image.convertToFormat(QImage.Format_RGB888)
+        imgaeFormat = QImage.Format_RGB888
+#         imgaeFormat = QImage.Format_Indexed8
+        newImage = self.image.convertToFormat(imgaeFormat)
         ptr = newImage.bits()
         ptr.setsize(newImage.byteCount())
-        numpyArray = np.asarray(ptr, dtype=np.ubyte)
+        numpyArray = np.reshape( np.asarray(ptr, dtype=np.ubyte), (-1, 2))
         
         # Tu si urob filter nad polom
-        # Usporiadanie je 1D pole s troma hodnotami RGB 8,8,8
-        # Teda width x height x 3 [R,G,B,R,G,B,...]
-        numpyArray = numpyArray - 50
+#         numpyArray = numpyArray - 50
         
         # koniec filtra
-        self.modifiedImage = QImage(numpyArray.tostring(), newImage.width(), newImage.height(), QImage.Format_RGB888)
+        self.modifiedImage = QImage(numpyArray.tostring(), newImage.width(), newImage.height(), imgaeFormat)
     
     def get(self):
         return self.modifiedImage
