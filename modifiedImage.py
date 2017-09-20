@@ -2,8 +2,8 @@
 
 # Global imports
 from __future__ import print_function
-from PyQt4.Qt import QImage
 import numpy as np
+from PIL import Image, ImageQt
 
 class ModifiedImage():
     
@@ -13,17 +13,16 @@ class ModifiedImage():
         self.applyFilter()
     
     def applyFilter(self):
-        imgaeFormat = QImage.Format_RGB32
-        newImage = self.image.convertToFormat(imgaeFormat)
-        ptr = newImage.bits()
-        ptr.setsize(newImage.byteCount())
-        numpyArray = np.reshape( np.asarray(ptr, dtype=np.ubyte), (newImage.height(), newImage.width()*4))
+        # Konvertujem QImage do grayscale
+        pil_im = ImageQt.fromqimage(self.image).convert('LA')
+        # Pole v Numpy 8bit oer pixel
+        numpyArray = np.asarray(pil_im)
         
         # Tu si urob filter nad polom
 #         numpyArray = numpyArray - 50
         
-        # koniec filtra
-        self.modifiedImage = QImage(numpyArray.tostring(), newImage.width(), newImage.height(), imgaeFormat)
-    
+        # koniec filtra, konvertujem obrazok nazad to QTimage
+        self.modifiedImage = ImageQt.ImageQt(Image.fromarray(numpyArray, 'LA').convert('RGB'))
+        
     def get(self):
         return self.modifiedImage
