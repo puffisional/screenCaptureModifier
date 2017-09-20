@@ -16,7 +16,7 @@ if __name__ == '__main__':
     window = mainWindow.MainWindow()
     window.show()
     # Tu si vyberas coordinaty na grabovanie plochy a fps
-    capture = ScreenCapture(coords=QRect(300,300,1280,900), fps=32)
+    capture = ScreenCapture(coords=QRect(300,300,500,500), fps=32)
     
     capture.newScreen.connect(window.originalPictureWidget.updateImage)
     capture.newTransformedScreen.connect(window.transofrmedPictureWidget.updateImage)

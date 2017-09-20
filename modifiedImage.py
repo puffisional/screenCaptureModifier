@@ -13,12 +13,11 @@ class ModifiedImage():
         self.applyFilter()
     
     def applyFilter(self):
-        imgaeFormat = QImage.Format_RGB888
-#         imgaeFormat = QImage.Format_Indexed8
+        imgaeFormat = QImage.Format_RGB32
         newImage = self.image.convertToFormat(imgaeFormat)
         ptr = newImage.bits()
         ptr.setsize(newImage.byteCount())
-        numpyArray = np.reshape( np.asarray(ptr, dtype=np.ubyte), (-1, 2))
+        numpyArray = np.reshape( np.asarray(ptr, dtype=np.ubyte), (newImage.height(), newImage.width()*4))
         
         # Tu si urob filter nad polom
 #         numpyArray = numpyArray - 50

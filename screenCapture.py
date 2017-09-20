@@ -3,8 +3,7 @@
 # Global imports
 from __future__ import print_function
 from PyQt4.QtGui import QApplication
-from PyQt4.Qt import QPixmap, QTimer, QObject, pyqtSignal, QImage
-import numpy as np
+from PyQt4.Qt import QPixmap, QTimer, QObject, pyqtSignal
 import Queue
 from modifiedImage import ModifiedImage
 
