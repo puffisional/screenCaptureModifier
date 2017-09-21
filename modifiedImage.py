@@ -40,6 +40,7 @@ class ModifiedImage():
         strio = cStringIO.StringIO()
         strio.write(imgBuffer.data())
         imgBuffer.close()
+        strio.seek(0)
         pil_im = Image.open(strio).convert('L')
         
         # Pole v Numpy 8bit oer pixel
