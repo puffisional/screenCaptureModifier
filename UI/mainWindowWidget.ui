@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>524</width>
-    <height>295</height>
+    <width>708</width>
+    <height>434</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -168,8 +168,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>524</width>
-     <height>27</height>
+     <width>708</width>
+     <height>25</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuApplication">
@@ -178,7 +178,18 @@
     </property>
     <addaction name="actionClose"/>
    </widget>
+   <widget class="QMenu" name="menuColormap">
+    <property name="title">
+     <string>Colormap</string>
+    </property>
+    <addaction name="actionVirdis"/>
+    <addaction name="actionInferno"/>
+    <addaction name="actionPlasma"/>
+    <addaction name="actionMagma"/>
+    <addaction name="actionNone"/>
+   </widget>
    <addaction name="menuApplication"/>
+   <addaction name="menuColormap"/>
   </widget>
   <action name="actionClose">
    <property name="text">
@@ -193,6 +204,31 @@
   <action name="actionTransformed_picture">
    <property name="text">
     <string>Transformed picture</string>
+   </property>
+  </action>
+  <action name="actionVirdis">
+   <property name="text">
+    <string>Virdis</string>
+   </property>
+  </action>
+  <action name="actionInferno">
+   <property name="text">
+    <string>Inferno</string>
+   </property>
+  </action>
+  <action name="actionPlasma">
+   <property name="text">
+    <string>Plasma</string>
+   </property>
+  </action>
+  <action name="actionMagma">
+   <property name="text">
+    <string>Magma</string>
+   </property>
+  </action>
+  <action name="actionNone">
+   <property name="text">
+    <string>None</string>
    </property>
   </action>
  </widget>
@@ -214,5 +250,92 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>actionInferno</sender>
+   <signal>activated()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>setCmapInferno()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>353</x>
+     <y>216</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionMagma</sender>
+   <signal>activated()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>setCmapMagma()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>353</x>
+     <y>216</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionVirdis</sender>
+   <signal>activated()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>setCmapVirdis()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>353</x>
+     <y>216</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionPlasma</sender>
+   <signal>activated()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>setCmapPlasma()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>353</x>
+     <y>216</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionNone</sender>
+   <signal>activated()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>setCmapNone()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>353</x>
+     <y>216</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
+ <slots>
+  <slot>setCmapInferno()</slot>
+  <slot>setCmapMagma()</slot>
+  <slot>setCmapVirdis()</slot>
+  <slot>setCmapPlasma()</slot>
+  <slot>setCmapNone()</slot>
+ </slots>
 </ui>

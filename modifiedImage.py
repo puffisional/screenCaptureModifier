@@ -6,15 +6,21 @@ import numpy as np
 from PyQt4.Qt import QBuffer, QIODevice
 from PIL import Image, ImageQt
 import cStringIO
-import matplotlib.pyplot as plt
+import time
+import screenCaptureModifier
+
+def scale_range (input, max):
+    input += -(np.min(input))
+    aMax = np.max(input)
+    if np.max(input) <= 0: aMax = 1
+    input /= aMax / max
+    return input
 
 def fft(data):
-    res = np.fft.fft2(data, s=(512,512))
+    res = np.fft.fft2(data, s=data.shape)
     res = np.fft.fftshift(res)
     newArray = np.log(np.absolute(res))
-    minV, maxV = newArray.min(), newArray.max()
-    newArray -= minV
-    newArray *= 255 / (maxV - minV)
+    newArray = scale_range(newArray, 255)
     return newArray.astype(np.uint8)
 
 class ModifiedImage():
@@ -26,38 +32,29 @@ class ModifiedImage():
     
     def applyFilter(self):
         # Konvertujem QImage do grayscale
-        #pil_im = ImageQt.fromqimage(self.image).convert('L')
         
-        buffer = QBuffer()
-        buffer.open(QIODevice.ReadWrite)
-        self.image.save(buffer, "bmp")
+        imgBuffer = QBuffer()
+        imgBuffer.open(QIODevice.ReadWrite)
+        self.image.save(imgBuffer, "bmp")
 
         strio = cStringIO.StringIO()
-        strio.write(buffer.data())
-        buffer.close()
-        strio.seek(0)
+        strio.write(imgBuffer.data())
+        imgBuffer.close()
         pil_im = Image.open(strio).convert('L')
-		# Pole v Numpy 8bit oer pixel
-        numpyArray = np.array(np.asarray(pil_im), copy=True)
-        typeBefore = numpyArray.dtype
+        
+        # Pole v Numpy 8bit oer pixel
+        numpyArray = np.asarray(pil_im)
         # Tu si urob filter nad polom
         
-        #result_array = np.zeros_like(input_image)  # make sure data types, 
-        # sizes and numbers of channels of input and output numpy arrays are the save
-		
-        numpyArray2 = fft(numpyArray)
-        #for i in range(500):
-        #   numpyArray2[i][i] = 150
-		
-
-		
-        #print("a", repr(numpyArray2[i][i]))
-        print("b", numpyArray2)
+        numpyArray = fft(numpyArray)
         
-        
-		
         # koniec filtra, konvertujem obrazok nazad to QTimage
-        self.modifiedImage = ImageQt.ImageQt(Image.fromarray(numpyArray2, 'L').convert('RGB'))
+        pilOutput = Image.fromarray(numpyArray, 'L')
+        
+        if screenCaptureModifier.colorMap is not None:
+            pilOutput.putpalette(screenCaptureModifier.colorMap)
+            
+        self.modifiedImage = ImageQt.ImageQt(pilOutput.convert('RGB'))
         
     def get(self):
         return self.modifiedImage
