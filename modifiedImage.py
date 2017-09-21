@@ -14,7 +14,7 @@ class ModifiedImage():
     
     def applyFilter(self):
         # Konvertujem QImage do grayscale
-        pil_im = ImageQt.fromqimage(self.image).convert('LA')
+        pil_im = ImageQt.fromqimage(self.image).convert('L')
         # Pole v Numpy 8bit oer pixel
         numpyArray = np.asarray(pil_im)
         
@@ -22,7 +22,7 @@ class ModifiedImage():
 #         numpyArray = numpyArray - 50
         
         # koniec filtra, konvertujem obrazok nazad to QTimage
-        self.modifiedImage = ImageQt.ImageQt(Image.fromarray(numpyArray, 'LA').convert('RGB'))
+        self.modifiedImage = ImageQt.ImageQt(Image.fromarray(numpyArray, 'L').convert('RGB'))
         
     def get(self):
         return self.modifiedImage
