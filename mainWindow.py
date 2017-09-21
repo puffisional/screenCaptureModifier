@@ -3,13 +3,13 @@
 # Global imports
 from __future__ import print_function
 from PyQt4.Qt import QMainWindow
-import matplotlib.pyplot as plt
 import numpy as np
 
 # Local imports
 from screenCaptureModifier.UI.mainWindowWidget import Ui_MainWindow
 from screenCaptureModifier.imageViewer import ImageViewer
 import screenCaptureModifier
+from screenCaptureModifier.colorMaps import cmapVirdis, cmapInferno, cmapPlasma, cmapMagma
 
 class MainWindow(Ui_MainWindow, QMainWindow):
     
@@ -27,23 +27,16 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.transformedPictureFrame.layout().addWidget(self.transofrmedPictureWidget)
         
     def setCmapPlasma(self):
-        screenCaptureModifier.colorMap = self._makeCmap("plasma")
+        screenCaptureModifier.colorMap = cmapPlasma
 
     def setCmapVirdis(self):
-        screenCaptureModifier.colorMap = self._makeCmap("viridis")
+        screenCaptureModifier.colorMap = cmapVirdis
         
     def setCmapMagma(self):
-        screenCaptureModifier.colorMap = self._makeCmap("magma")
+        screenCaptureModifier.colorMap = cmapMagma
         
     def setCmapInferno(self):
-        screenCaptureModifier.colorMap = self._makeCmap("inferno")
+        screenCaptureModifier.colorMap = cmapInferno
         
     def setCmapNone(self):
         screenCaptureModifier.colorMap = None
-        
-    def _makeCmap(self, name):
-        inferno = plt.get_cmap(name)
-        a = np.array(inferno.colors)
-        val = a.reshape(768)
-        val *= 255
-        return val.astype(np.uint8)
