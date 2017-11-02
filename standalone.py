@@ -13,7 +13,6 @@ import argparse
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
-    
     p = argparse.ArgumentParser()
     p.add_argument("--coords", default="200,200,800,600")
     p.add_argument("--fps", default=15)
@@ -29,5 +28,6 @@ if __name__ == '__main__':
     
     capture.newScreen.connect(window.originalPictureWidget.updateImage)
     capture.newTransformedScreen.connect(window.transofrmedPictureWidget.updateImage)
+    
     
     app.exec_()
